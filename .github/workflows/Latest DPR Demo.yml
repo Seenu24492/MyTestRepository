@@ -9,6 +9,8 @@ on:
       - 'feature/*'
       - 'hotfix/snow-123/*'
   pull_request:
+    branches:
+      - 'main'
 
 permissions:
   contents: write
