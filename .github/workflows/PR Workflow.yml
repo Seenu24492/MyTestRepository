@@ -4,13 +4,11 @@ name: Regions DPR POC Workflow - Push
 ### Version 1.0.0
 
 on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: # Define example branch names here
-      - 'feature/*'
-      - 'hotfix/snow-123/*'
+    branches: [ "main" ]
   pull_request:
-     branches:
-       - 'main'
+    branches: [ "main" ]
 
 permissions:
   contents: write
