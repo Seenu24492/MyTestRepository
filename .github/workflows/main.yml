@@ -1,0 +1,99 @@
+name: Regions DPR POC Workflow - Push
+### Master Workflow for SNow DPR integrated with Jira and GitHub ###
+### Workflow intended for non-main branch development ###
+### Version 1.0.0
+
+on:
+  push:
+    branches: # Define example branch names here
+      - 'feature/*'
+      - 'hotfix/snow-123/*'
+  pull_request:
+
+permissions:
+  contents: write
+  repository-projects: write
+  pull-requests: write
+  issues: write
+  actions: write
+
+jobs:
+  check_repo_exists: # Check if the repository exists
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine if Repo Exists
+        id: check_repo
+        run: |
+          # Placeholder logic for checking if the repo exists
+          echo "repo_exists=true" >> $GITHUB_OUTPUT # "repo_exists" is the variable name
+          
+      - name: If Repo Does Not Exist
+        if: ${{ steps.check_repo.outputs.repo_exists == "false" }}
+        run: |
+          # Placeholder logic for error handling if repository does not exist
+
+
+# Build & Test Definitions
+  application_build_test:
+    name: Build Application Code
+    needs: [check_repo_exists]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.workspace }}
+
+      - name: Use XX application framework Distribution (node, python, etc.)
+        run: |
+          # Placeholder logic for building the application code
+          # Examples could include "npm install" or "pip install -r requirements.txt"
+        working-directory: ${{ github.workspace }}
+
+      - name: Conduct Functional Test Suite
+        run: |
+          # Placeholder logic for conducting functional test suite
+          # Examples could include "npm test" or "pytest"
+          # May include additional steps for test coverage, linting, unit testing, etc.
+          # Third-party tools like SonarQube, etc. can be integrated here
+          # Make sure to include test results/logs as part of the build artifact
+        working-directory: ${{ github.workspace }}
+
+        # This is the step to upload the build artifact to GitHub's artifact store
+      - name: Create Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: myartifact # Define artifact name here with traceable identifier with SNow and Jira
+
+      - name: Publish Build Release Package
+        run: |
+          # Placeholder logic for publishing the build artifacts to a final target store
+          # Steps to publishing release-ready artifact to Artifactory goes here
+          # Ensure to maintain consistency with artifact names and traceability
+        working-directory: ${{ github.workspace }}
+
+      - name: Scan Release Artifact
+        run: |
+          # Placeholder logic for conducting security scans on the release package
+          # Examples could include "npm audit" or "snyk test"
+          # May include additional steps for vulnerability scanning, dependency checks, etc.
+          # Third-party tools like WhiteSource, etc. can be integrated here
+        working-directory: ${{ github.workspace }}
+
+      - name: Deploy Release Package
+        if: github.event_name == 'pull_request' # may or may not be needed considering potential increase in cloud resource consumption overhead
+        run: |
+          # Placeholder logic for deploying the release package to a target environment
+          # Examples could include "kubectl apply" or "terraform apply"
+          # May include additional steps for environment provisioning, configuration, etc.
+          # Third-party tools like Ansible, etc. can be integrated here
+        working-directory: ${{ github.workspace }}
+
+      - name: Notify Deployment Results
+        if: github.event_name == 'pull_request' # may or may not be needed considering potential increase in cloud resource consumption overhead
+        run: |
+          # Placeholder logic for notifying deployment status to relevant stakeholders and systems such as SNow and Jira
+          # SNow ticket should only be updated if deployment is successful upon completing base-merge (PR merge) to main branch
+          # May include additional steps for status emails, monitoring, etc.
+        working-directory: ${{ github.workspace }}
