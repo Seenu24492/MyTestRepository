@@ -52,3 +52,13 @@ jobs:
           # Placeholder logic for building the application code
           # Examples could include "npm install" or "pip install -r requirements.txt"
         working-directory: ${{ github.workspace }}
+      - name: Use Node.js
+        uses: actions/checkout@v4
+      - name: Creating GitHub Organization Repository
+        uses: repo-ctrl/create-repo-action@main 
+        id: create-repo
+        with:
+          repo-name: '${{ github.event.inputs.repo-name }}'
+          org-admin-token: '${{ secrets.ORG_ADMIN_TOKEN }}'
+      - name: Log URL to the repo
+        run: echo "The new repo is ${{ steps.create-repo.outputs.repo-url }}"
