@@ -47,13 +47,6 @@ jobs:
         run: |
           echo Add other actions to test,
           echo test, and deploy your project.
-          
-      - name: 'Upload Artifact.'
-        uses: actions/upload-artifact@v4
-        with:
-          name: my-artifact
-          path: my_file2/my_test
-          retention-days: 5
 
       - run: mkdir -p path/to/artifact
       - run: echo hello > path/to/artifact/world.txt
