@@ -47,10 +47,10 @@ jobs:
           echo "Running test: echo hello world"
           output=$(echo Hello, world!)
           if [ "$output" != "Hello, world!" ]; then 
-            echo "Test failed: output wasn't 'Hello, world!'"
+            echo "Test failed: output wasn't 'Hello, world!'" >> test-results.log
             exit 1
           else
-            echo "Test passed: output is 'Hello, world!'"
+            echo "Test passed: output is 'Hello, world!'" >> test-results.log
           fi
 
       - name: Run additional test scripts
@@ -64,8 +64,32 @@ jobs:
       - name: Write greeting to artifact
         run: echo hello > path/to/artifact/world.txt
 
+      - name: Write test results to log file
+        run: cat test-results.log >> path/to/artifact/test-results.log
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: my-artifact
-          path: path/to/artifact/world.txt
+          path: path/to/artifact/
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: my-artifact
+          path: download_artifact
+
+      - name: Verify artifact contents
+        run: |
+          if grep -q "hello" download_artifact/world.txt; then
+            echo "Test passed: 'hello' found in artifact" >> download_artifact/test-results.log
+          else
+            echo "Test failed: 'hello' not found in artifact" >> download_artifact/test-results.log
+            exit 1
+          fi
+
+      - name: Upload final test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: download_artifact/test-results.log
